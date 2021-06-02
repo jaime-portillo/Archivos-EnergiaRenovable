@@ -1,4 +1,8 @@
 #include <Servo.h>
+int estadoPulsador = 0;  //LOW es 0 y HIGH es 1
+//variable para guardar el estado anterior del pulsador
+int estadoAnterior = 0;  //LOW es 0 y HIGH es 1
+int pulsador=13;
 //variable para manipular el servo
 Servo servoMotor;
 //asignando A0 a constante photA(fotorresistencia A)
@@ -12,9 +16,7 @@ const bool servoInicio = false;
 //Asignando led rojo a pin 2, estos led se usaran para el 
 //control de la carga de la bateria, rojo = necesita cargar
 //y verde= carga completa  (esto para no sobrecargar la bateria)
-const int redLed = 2;
-//Asignando led verde a pin 3
-const int greenLed = 3;
+const int led = 2;
 
 void setup()
 {
@@ -22,16 +24,31 @@ void setup()
   //Definiendo pines de entrada y salida
   pinMode(photA, INPUT);
   pinMode(photB, INPUT);
-  pinMode(redLed, OUTPUT);
-  pinMode(greenLed, OUTPUT);
+  pinMode(led, OUTPUT);
+  pinMode(A2,INPUT);
+  pinMode(pulsador,OUTPUT);
+  pinMode(A2,INPUT); 
   // Iniciamos el servo para que empiece a trabajar con el pin asignado
   servoMotor.attach(8);
-  
 }
 void loop()
 { 
-  digitalWrite(redLed, HIGH);
-  digitalWrite(greenLed, HIGH);
+   //controlando suministro del panel a la bateria para no sobrecargarla
+  int valorPot=analogRead(A2);
+  Serial.println(valorPot);
+  delay(100);
+  while(valorPot>950){
+  	digitalWrite(2,LOW);
+    valorPot=analogRead(A2);
+    estadoPulsador=0;
+     digitalWrite(pulsador,estadoPulsador);   
+  }
+  while(valorPot<950){
+  	digitalWrite(2,HIGH);
+    valorPot=analogRead(A2);
+    estadoPulsador=1;
+     digitalWrite(pulsador,estadoPulsador);
+  } 
   
   //captando valor de PhotA
   int valueA = analogRead(photA);
